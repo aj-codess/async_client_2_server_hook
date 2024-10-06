@@ -34,7 +34,7 @@ boost::asio::io_context context;
 boost::asio::io_context::work idleWork(context);
 std::thread io_context_thread=std::thread([&](){context.run();});
 
-boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::make_address("127.0.0.1",error_pool),8080);
+boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::make_address("::1",error_pool),8080);
 boost::asio::ip::tcp::socket socket(context);
 
 socket.connect(endpoint,error_pool);

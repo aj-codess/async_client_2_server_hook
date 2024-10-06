@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/aj/code/Berita/async_client_2_server_hook/build",
+  "command": "/usr/bin/c++  -I/home/aj/code/Berita/async_client_2_server_hook/include -I/home/aj/code/Berita/vcpkg/installed/x64-linux/include  -std=c++17 -g -std=gnu++17 -o CMakeFiles/main.dir/main.cpp.o -c /home/aj/code/Berita/async_client_2_server_hook/main.cpp",
+  "file": "/home/aj/code/Berita/async_client_2_server_hook/main.cpp",
+  "output": "CMakeFiles/main.dir/main.cpp.o"
+}
+]

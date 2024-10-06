@@ -1,0 +1,43 @@
+void connections::r_w_handler(std::shared_ptr<boost::asio::ip::tcp::socket> socket, boost::asio::yield_context yield) {
+    try {
+        for (;;) {
+            boost::beast::tcp_stream stream_socket(std::move(*socket));
+            boost::beast::flat_buffer buffer;
+            boost::beast::http::request<boost::beast::http::string_body> req;
+            boost::beast::http::response<boost::beast::http::string_body> res;
+
+            // Start asynchronous read
+            boost::beast::http::async_read(stream_socket, buffer, req, 
+                [this, &stream_socket, &buffer, &req, &res, yield](boost::beast::error_code beast_ec, std::size_t size_received) {
+                    if (!beast_ec) {
+                        request_handler(req, res);
+
+                        // Start asynchronous write
+                        boost::beast::http::async_write(stream_socket, res, 
+                            [this, &stream_socket](boost::beast::error_code ec, std::size_t) {
+                                if (!ec) {
+                                    // Properly shutdown the socket after the write is done
+                                    boost::beast::error_code shutdown_ec;
+                                    stream_socket.socket().shutdown(boost::asio::ip::tcp::socket::shutdown_send, shutdown_ec);
+
+                                    if (shutdown_ec) {
+                                        std::cerr << "Shutdown Error: " << shutdown_ec.message() << std::endl;
+                                    }
+                                } else {
+                                    std::cerr << "Write Error: " << ec.message() << std::endl;
+                                }
+                            }
+                        );
+                    } else {
+                        std::cerr << "Read Error: " << beast_ec.message() << std::endl;
+                    }
+                }
+            );
+
+            // Here, we remove the immediate shutdown to avoid premature closure of the socket.
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error with session: " << e.what() << std::endl;
+    }
+}
+
